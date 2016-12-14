@@ -2,6 +2,7 @@ import argparse
 import base64
 import json
 
+import cv2
 import numpy as np
 import socketio
 import eventlet
@@ -33,7 +34,8 @@ def telemetry(sid, data):
     imgString = data["image"]
     image = Image.open(BytesIO(base64.b64decode(imgString)))
     image_array = np.asarray(image)
-    transformed_image_array = image_array[None, :, :, :]
+    resized_image = cv2.resize(image_array, (64, 32))
+    transformed_image_array = resized_image[None, :, :, :]
     # This model currently assumes that the features of the model are just the images. Feel free to change this.
     steering_angle = float(model.predict(transformed_image_array, batch_size=1))
     # The driving model currently just outputs a constant throttle. Feel free to edit this.
